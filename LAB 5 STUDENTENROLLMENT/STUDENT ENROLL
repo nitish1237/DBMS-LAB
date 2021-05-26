@@ -1,0 +1,87 @@
+create database studentenroll;
+use studentenroll;
+create table student(regno varchar(30),
+sname varchar(30),
+major varchar(30),
+bdate date,
+primary key(regno));
+
+create table course(courseno int,
+cname varchar(30),
+dept varchar(30),
+primary key(courseno));
+
+create table enroll(regno varchar(30),
+courseno int,
+sem varchar(30),
+marks int,
+foreign key(regno)references student(regno)on delete cascade ON UPDATE CASCADE,
+foreign key(courseno)references course(courseno)on delete cascade ON UPDATE CASCADE);
+
+create table bookadoption(courseno int,
+sem varchar(30),
+book_isbn int,
+primary key(book_isbn));
+
+create table textb(book_isbn int,
+book_title varchar(30),
+publisher varchar(30),
+author varchar(30),
+primary key(book_title),
+foreign key(book_isbn)references bookadoption(book_isbn)ON DELETE CASCADE on UPDATE cascade);
+
+insert into student values("CS01","RAM","DS",'1986-03-12');
+insert into student values("IS02","SMITH","USP",'1987-12-23');
+insert into student values("EC03","AHMED","SNS",'1985-04-17');
+insert into student values("CS03","SNEHA","DBMS",'1987-01-01');
+insert into student values("TC05","AKHILA","EC",'1986-10-06');
+SELECT *FROM STUDENT;
+
+insert into COURSE values(11,"DS",'CS');
+insert into COURSE values(22,"USP",'IS');
+insert into COURSE values(33,"SNS",'EC');
+insert into COURSE values(44,"DBMS",'CS');
+insert into COURSE values(55,"EC",'TC');
+SELECT *FROM COURSE;
+
+insert into ENROLL values("CS01",11,'4',85);
+insert into ENROLL values("IS02",22,'6',80);
+insert into ENROLL values("EC03",33,'2',80);
+insert into ENROLL values("CS03",44,'6',75);
+insert into ENROLL values("TC05",55,'2',8);
+SELECT *FROM ENROLL;
+
+INSERT INTO BOOKADOPTION VALUES(11,'4',1);
+INSERT INTO BOOKADOPTION VALUES(11,'4',2);
+INSERT INTO BOOKADOPTION VALUES(44,'6',3);
+INSERT INTO BOOKADOPTION VALUES(44,'6',4);
+INSERT INTO BOOKADOPTION VALUES(55,'2',5);
+INSERT INTO BOOKADOPTION VALUES(22,'6',6);
+INSERT INTO BOOKADOPTION VALUES(55,'2',7);
+select *FROM BOOKADOPTION;
+
+INSERT INTO TEXTB VALUES(1,"DS AND C","PRINCETON","PADMAREDDY");
+INSERT INTO TEXTB VALUES(2,"FUNDAMENTALS OF DS","PRINCETON","GODSE");
+INSERT INTO TEXTB VALUES(3,"FUNDAMENTALS OF DBMS","PRINCETON","NAVATHE");
+INSERT INTO TEXTB VALUES(4,"SQL","PRINCETON","FOLEY");
+INSERT INTO TEXTB VALUES(5,"ELECTRONIC CIRCUITS","TMH","ELMASRI");
+INSERT INTO TEXTB VALUES(6,"ADV UNIX PROG","TMH","STEVENS");
+SELECT *FROM TEXTB;
+
+ -- Demonstrate how you add a new text book to the database and make this book be adopted by some department.
+INSERT INTO TEXTB VALUES(7,"OS AND ITS APPLICATIONS","TMH","GACOBS");
+INSERT INTO BOOKADOPTION VALUES(11,"4",8);
+SELECT *FROM TEXTB;
+SELECT *FROM BOOKADOPTION;
+
+-- Produce a list of text books (include Course #, Book-ISBN, Book-title) in the alphabetical order for courses offered by the ‘CS’ department that use more than two books.
+SELECT C.COURSENO,T.BOOK_TITLE FROM TEXTB T,COURSE C ,BOOKADOPTION B 
+WHERE  C.COURSENO=B.COURSENO AND B.BOOK_ISBN=T.BOOK_ISBN AND C.DEPT="CS" AND(SELECT COUNT(B.BOOK_ISBN) FROM BOOKADOPTION B WHERE C.COURSENO=B.COURSENO)>=2 order by T.BOOK_TITLE;
+
+-- List any department that has all its adopted books published by a specific publisher.
+SELECT DISTINCT C.DEPT FROM COURSE C,TEXTB T,BOOKADOPTION B WHERE T.BOOK_ISBN=B.BOOK_ISBN AND C.COURSENO=B.COURSENO AND T.PUBLISHER="TMH";
+
+
+
+
+
