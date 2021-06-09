@@ -1,0 +1,116 @@
+create database movie;
+use movie;
+
+create table actor(
+act_id int,
+act_name varchar(40),
+act_gender varchar(40),
+primary key(act_id));
+
+create table director(
+dir_id int,
+dir_name varchar(40),
+dir_phone REAL,
+primary key(dir_id));
+
+create table movies(
+mov_id int,
+mov_title varchar(40),
+mov_year INT,
+mov_lang varchar(40),
+dir_id int,
+primary key(mov_id),
+foreign key(dir_id)references director(dir_id)on delete cascade on update cascade);
+
+create table movie_cast(
+act_id int,
+mov_id int,
+role varchar(40),
+
+foreign key(act_id)references actor(act_id)on delete cascade on update cascade,
+foreign key(mov_id)references movies(mov_id)on delete cascade on update cascade
+);
+
+create table rating(
+mov_id int,
+rev_stars varchar(30),
+PRIMARY KEY(MOV_ID),
+foreign key(mov_id)references movies(mov_id)on delete cascade on update cascade);
+
+INSERT INTO ACTOR VALUES(1,"YASH","MALE");
+INSERT INTO ACTOR VALUES(2,"TOM CRUISE","MALE");
+INSERT INTO ACTOR VALUES(3,"KRITISANON","FEMALE");
+INSERT INTO ACTOR VALUES(4,"SUDEEP","MALE");
+INSERT INTO ACTOR VALUES(5,"PUNEET","MALE");
+INSERT INTO ACTOR VALUES(6,"POOJAHEGDE","FEMALE");
+
+SELECT *FROM ACTOR;
+
+INSERT INTO DIRECTOR VALUES(001,"PRASHANTNEIL",9233355622);
+INSERT INTO DIRECTOR VALUES(002,"STEVEN SPIELBERG",9234555622);
+INSERT INTO DIRECTOR VALUES(003,"RAJMOULI",9712455622);
+INSERT INTO DIRECTOR VALUES(004,"LAXMAN UTEKAR",7823355622);
+INSERT INTO DIRECTOR VALUES(005,"MRINAL SEN",8213355622);
+INSERT INTO DIRECTOR VALUES(006,"PUTTANA KANAGAL",9663355322);
+INSERT INTO DIRECTOR VALUES(007,"HITCHCOCK",9612355322);
+SELECT *FROM DIRECTOR;
+
+INSERT INTO MOVIES VALUES(11,"KGF 2",2021,"KANNADA",001);
+INSERT INTO MOVIES VALUES(22,"WAR OF WORLDS",2005,"ENGLISH",002);
+INSERT INTO MOVIES VALUES(33,"ADVENTURES OF TINTIN",2011,"ENGLISH",007);
+INSERT INTO MOVIES VALUES(44,"BAHUBALI",2015,"TELUGU",003);
+INSERT INTO MOVIES VALUES(55,"NAGARAHAVU",1975,"KANNADA",006);
+INSERT INTO MOVIES VALUES(66,"CHORUS",1974,"HINDI",005);
+INSERT INTO MOVIES VALUES(77,"LUKA CHUPPI",2019,"HINDI",004);
+INSERT INTO MOVIES VALUES(88,"REAR WINDOW",1954,"SPANISH",007);
+INSERT INTO MOVIES VALUES(99,"THE BIRDS",1964,"ENGLISH",007);
+SELECT *FROM MOVIES;
+
+INSERT INTO MOVIE_CAST VALUES(1,11,"HERO");
+INSERT INTO MOVIE_CAST VALUES(6,11,"HEROINE");
+INSERT INTO MOVIE_CAST VALUES(2,22,"HERO");
+INSERT INTO MOVIE_CAST VALUES(4,22,"VILLIAN");
+INSERT INTO MOVIE_CAST VALUES(3,77,"HEROINE");
+INSERT INTO MOVIE_CAST VALUES(5,77,"HERO");
+INSERT INTO MOVIE_CAST VALUES(6,77,"HERO SISTER");
+INSERT INTO MOVIE_CAST VALUES(4,44,"HERO");
+SELECT *FROM MOVIE_CAST;
+
+INSERT INTO RATING VALUES(11,"3");
+INSERT INTO RATING VALUES(22,"4");
+INSERT INTO RATING VALUES(88,"1");
+INSERT INTO RATING VALUES(77,"2");
+INSERT INTO RATING VALUES(66,"3");
+SELECT *FROM RATING;
+
+/1. List the titles of all movies directed by‘Hitchcock’./
+SELECT MOV_TITLE FROM MOVIES M,DIRECTOR D WHERE M.DIR_ID=D.DIR_ID AND D.DIR_NAME="HITCHCOCK";
+
+/2. Find the movie names where one or more actors acted in two or more movies./
+SELECT DISTINCT MOV_TITLE FROM MOVIES M,MOVIE_CAST S WHERE M.MOV_ID=S.MOV_ID AND S.MOV_ID>=2;
+
+/3. List all actors who acted in a movie before 2000 and also in a movie after
+2015 (use JOIN operation)./
+SELECT ACT_NAME, MOV_TITLE, MOV_YEAR
+FROM ACTOR A JOIN
+MOVIE_CAST C
+ON A.ACT_ID=C.ACT_ID
+JOIN MOVIES M
+ON C.MOV_ID=M.MOV_ID
+WHERE M.MOV_YEAR NOT BETWEEN 2000 AND 2015;
+
+
+/4. Find the title of movies and number of stars for each movie that has at least
+one rating and find the highest number of stars that movie received. Sort the
+result by movie title. /
+SELECT MOV_TITLE, MAX(REV_STARS) FROM MOVIES
+INNER JOIN RATING USING (MOV_ID) GROUP
+BY MOV_TITLE
+HAVING MAX(REV_STARS)>0
+ORDER BY MOV_TITLE;
+
+/5. Update rating of all movies directed by ‘Steven Spielberg’ to 5/
+UPDATE RATING SET REV_STARS='5' WHERE MOV_ID=
+(SELECT MOV_ID FROM MOVIES WHERE DIR_ID=
+(SELECT DIR_ID FROM DIRECTOR WHERE DIR_NAME="STEVEN SPIELBERG"));
+select * from rating;
